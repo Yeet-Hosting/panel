@@ -2,6 +2,7 @@
 
 namespace Pterodactyl\Http\Controllers\Admin;
 
+use DB;
 use Illuminate\Http\Request;
 use Pterodactyl\Models\User;
 use Prologue\Alerts\AlertsMessageBag;
@@ -15,11 +16,12 @@ use Pterodactyl\Services\Users\UserCreationService;
 use Pterodactyl\Services\Users\UserDeletionService;
 use Pterodactyl\Http\Requests\Admin\UserFormRequest;
 use Pterodactyl\Contracts\Repository\UserRepositoryInterface;
+use Pterodactyl\Models\Server as Server;
 
 class UserController extends Controller
 {
     use AvailableLanguages;
-
+    
     /**
      * @var \Prologue\Alerts\AlertsMessageBag
      */
@@ -110,9 +112,12 @@ class UserController extends Controller
      */
     public function view(User $user)
     {
+        $servers = Server::where('owner_id', $user->id)->get();
+
         return view('admin.users.view', [
             'user' => $user,
             'languages' => $this->getAvailableLanguages(true),
+            'servers' => $servers
         ]);
     }
 
